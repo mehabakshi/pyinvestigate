@@ -36,6 +36,7 @@ class Investigate(object):
             "security":             "security/name/{}.json",
             "tags":                 "domains/{}/latest_tags",
             "whois_email":          "whois/emails/{}",
+            "whois_email_offset":   "whois/emails/{}?offset={}", # OFFSET
             "whois_ns":             "whois/nameservers/{}",
             "whois_domain":         "whois/{}",
             "whois_domain_history": "whois/{}/history",
@@ -211,12 +212,15 @@ class Investigate(object):
         resp_json = self.get_parse(uri, params=params)
         return resp_json
 
-    def email_whois(self, emails):
+    def email_whois(self, emails, offset=None):
         '''Gets the domains that have been registered with a given email
         address
         '''
         if not isinstance(emails, list):
-            uri = self._uris["whois_email"].format(emails)
+            if offset != 0 or offset:
+                uri = self._uris["whois_email_offset"].format(emails, offset)
+            else:
+                uri = self._uris["whois_email"].format(emails)
             params = {}
         else:
             uri = self._uris["whois_email"].format('')
